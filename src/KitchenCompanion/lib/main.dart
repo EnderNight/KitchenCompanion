@@ -1,14 +1,25 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const KitchenCompanionApp());
+    runApp(const KitchenCompanionApp());
 }
 
 class KitchenCompanionApp extends StatelessWidget {
-  const KitchenCompanionApp({super.key});
+    const KitchenCompanionApp({super.key});
 
-  @override
+    @override
     Widget build(BuildContext context) {
-      return const Text('Hello World!');
+        return MaterialApp(
+            home: Scaffold(
+                appBar: AppBar(
+                    title: const Text('Kitchen Companion'),
+                ),
+                body: const Center(
+                    child: Text(
+                        'Hello World!',
+                    ),
+                )
+            ),
+        );
     }
 }
