@@ -48,6 +48,18 @@ def createRecipeTable(cur):
     )
     ''')
 
+def createIngredientTable(cur):
+    cur.execute('''
+    CREATE TABLE IF NOT EXISTS ingredients(
+    recipeID INTEGER NOT NULL,
+    foodID INTEGER NOT NULL,
+    quantity REAL NOT NULL,
+    PRIMARY KEY (recipeID, foodID),
+    FOREIGN KEY (recipeID) REFERENCES recipes(id),
+    FOREIGN KEY (foodID) REFERENCES foods(id)
+    )
+    ''')
+
 
 def addFood(con, cur):
     print()
@@ -69,12 +81,34 @@ def addRecipe(con, cur):
     print("Add recipe mode")
     name = str(input("Enter the recipe's name: "))
 
-    print()
-    print(f"Adding ({name}) inside 'recipe' table...")
+    print(f"Adding ({name}) inside 'recipes' table...")
     cur.execute('''
     INSERT INTO recipes(name) VALUES(?)
     ''', (name,))
     con.commit()
+
+    recipeID = cur.execute('''
+    SELECT id FROM recipes WHERE name = ?
+    ''', (name,)).fetchone()[0]
+
+    foods = cur.execute('''
+    SELECT * FROM foods
+    ''').fetchall()
+
+    for food in foods:
+        print(f"food {food[0]}: name => {food[1]}")
+
+    ing = input("Enter the list of ingredients, separated by a space char: ").split(' ')
+    quan = input("Enter the quantity of each ingredients, separated by a space char: ").split(' ')
+
+    for i in range(len(ing)):
+        for food in foods:
+            if str(food[0]) == ing[i]:
+                cur.execute('''
+                INSERT INTO ingredients VALUES(?,?,?)
+                ''', (recipeID, int(ing[i]), float(quan[i]),))
+    con.commit()
+
     print("Done")
     print()
 
@@ -115,6 +149,7 @@ def main():
     cur, con = connect()
     createFoodTable(cur)
     createRecipeTable(cur)
+    createIngredientTable(cur)
 
 
     while mainLoop:
