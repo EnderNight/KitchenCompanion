@@ -24,11 +24,11 @@ def printHelp():
     print("Get food => get a food item info, 'get food'")
 
     # recipes
-    print("List recipes => lists saved receipts, 'list receipts'")
-    print("Add recipe => adds a receipt item to the database, 'add receipt'")
-    print("Update recipe => update a receipt item inside the database, 'update receipt'")
-    print("Delete recipe => delete a receipt item inside the database, 'delete receipt'")
-    print("Get recipe => get a receipt item info, 'get receipt'")
+    print("List recipes => lists saved recipes, 'list recipes'")
+    print("Add recipe => adds a recipe item to the database, 'add recipe'")
+    print("Update recipe => update a recipe item inside the database, 'update recipe'")
+    print("Delete recipe => delete a recipe item inside the database, 'delete recipe'")
+    print("Get recipe => get a recipe item info, 'get recipe'")
 
 
 def createFoodTable(cur):
@@ -142,6 +142,31 @@ def listRecipe(cur):
     print("Done")
     print()
 
+def listRecipeNum(cur):
+    listRecipe(cur)
+    recipeID = int(input("Enter the recipe id: "))
+    
+    foodIDs = cur.execute('''
+    SELECT foodID
+    FROM ingredients
+    WHERE recipeID = ?
+    ''', (recipeID,)).fetchall()
+
+    foods = []
+    for foodID in foodIDs:
+        foods.append(cur.execute('''
+        SELECT *
+        FROM foods
+        WHERE id = ?
+        ''', foodID).fetchone())
+
+    print("Needed ingredients:")
+    for food in foods:
+        print(f"{food[0]} | {food[2]} {food[1]}")
+
+    print()
+
+
 
 def main():
     mainLoop = True
@@ -168,6 +193,8 @@ def main():
                 addRecipe(con, cur)
             case "list recipes":
                 listRecipe(cur)
+            case "get recipe":
+                listRecipeNum(cur)
             case _:
                 print("Error: mode not recognized.")
 
