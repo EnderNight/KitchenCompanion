@@ -4,8 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 
 class CameraFeedWidget extends StatefulWidget {
-  final Function(InputImage image) onImage;
-
+  final void Function(InputImage image) onImage;
   const CameraFeedWidget({
     super.key,
     required this.onImage,
@@ -39,7 +38,10 @@ class _CameraFeedWidgetState extends State<CameraFeedWidget> {
         imageFormatGroup: ImageFormatGroup.nv21,
       );
       _initializeController = _controller!.initialize().then((_) {
+        if (!mounted) return;
+
         _controller!.startImageStream(_onImage);
+
         setState(() {});
       });
     }
@@ -91,11 +93,27 @@ class _CameraFeedWidgetState extends State<CameraFeedWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final size = 300.0;
     return FutureBuilder(
       future: _initializeController,
       builder: (_, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          return CameraPreview(_controller!);
+          return SizedBox(
+            width: size,
+            height: size,
+            child: ClipRect(
+              child: OverflowBox(
+                alignment: Alignment.center,
+                child: FittedBox(
+                  fit: BoxFit.fitWidth,
+                  child: SizedBox(
+                    height: size * _controller!.value.aspectRatio,
+                    child: CameraPreview(_controller!),
+                  ),
+                ),
+              ),
+            ),
+          );
         }
         return const Center(child: CircularProgressIndicator());
       },

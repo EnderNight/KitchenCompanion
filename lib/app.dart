@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kitchen_companion/pages/product_scanner_page.dart';
 
 class KitchenCompanionApp extends StatelessWidget {
   const KitchenCompanionApp({super.key});
@@ -10,7 +11,7 @@ class KitchenCompanionApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
       ),
-      home: Scaffold(),
+      home: ProductScannerPage(),
     );
   }
 }
